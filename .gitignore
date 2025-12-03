@@ -11,6 +11,9 @@
 # Temporary files
 *.tmp
 *~
+# Authentication files
+*.key
+.wwebjs*
 
 *.bak
 # Environment files (containing secrets, API keys, credentials)

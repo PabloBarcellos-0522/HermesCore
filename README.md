@@ -6,13 +6,13 @@ O projeto é ideal para centralizar a comunicação via WhatsApp, integrando-a c
 
 ## 🚀 Principais Recursos
 
-- **Envio de Mensagens**: Suporte para texto, imagens e documentos através de uma API REST.
-- **Autenticação Segura**: Acesso à API protegido por uma chave (API Key) configurada em um arquivo `.env`.
-- **Sistema de Comandos**: Capacidade de identificar comandos (ex: `!notas`) em mensagens recebidas e encaminhá-los para uma API externa.
-- **Webhook Externo**: Notifica uma API externa configurável sempre que uma nova mensagem é recebida, permitindo comunicação bidirecional.
-- **Gerenciamento de Sessão**: Utiliza o `whatsapp-web.js` para manter a sessão ativa, com reconexão automática e armazenamento local da sessão.
-- **Estrutura Modular**: Código organizado para facilitar a manutenção e a adição de novas funcionalidades.
-- **Logs Detalhados**: Fornece feedback claro sobre o status da conexão e as operações realizadas.
+-   **Envio de Mensagens**: Suporte para texto, imagens e documentos através de uma API REST.
+-   **Autenticação Segura**: Acesso à API protegido por uma chave (API Key) configurada em um arquivo `.env`.
+-   **Sistema de Comandos**: Capacidade de identificar comandos (ex: `!notas`) em mensagens recebidas e encaminhá-los para uma API externa.
+-   **Webhook Externo**: Notifica uma API externa configurável sempre que uma nova mensagem é recebida, permitindo comunicação bidirecional.
+-   **Gerenciamento de Sessão**: Utiliza o `whatsapp-web.js` para manter a sessão ativa, com reconexão automática e armazenamento local da sessão.
+-   **Estrutura Modular**: Código organizado para facilitar a manutenção e a adição de novas funcionalidades.
+-   **Logs Detalhados**: Fornece feedback claro sobre o status da conexão e as operações realizadas.
 
 ## ⚙️ Como Começar
 
@@ -20,8 +20,8 @@ Siga os passos abaixo para configurar e executar o projeto.
 
 ### 1. Pré-requisitos
 
-- [Node.js](https://nodejs.org/) (versão 18 ou superior)
-- `npm` (geralmente instalado com o Node.js)
+-   [Node.js](https://nodejs.org/) (versão 18 ou superior)
+-   `npm` (geralmente instalado com o Node.js)
 
 ### 2. Instalação
 
@@ -48,9 +48,9 @@ cp .env.example .env
 
 Abra o arquivo `.env` e configure as seguintes variáveis (substitua `SUA_CHAVE_AQUI` por um valor seguro para `API_KEY`):
 
-- `API_KEY`: Uma chave secreta para proteger o acesso à sua API.
-- `EXTERNAL_API_URL`: O endpoint da sua API externa que receberá as notificações de novas mensagens (webhooks).
-- `PORT`: A porta onde o servidor do HermesCore será executado (padrão: `3000`).
+-   `API_KEY`: Uma chave secreta para proteger o acesso à sua API.
+-   `EXTERNAL_API_URL`: O endpoint da sua API externa que receberá as notificações de novas mensagens (webhooks).
+-   `PORT`: A porta onde o servidor do HermesCore será executado (padrão: `3000`).
 
 ### 4. Executando o Servidor
 
@@ -81,50 +81,59 @@ x-api-key: SUA_CHAVE_SECRETA_CONFIGURADA_NO_.ENV
 Requisições sem a chave ou com uma chave inválida receberão um erro `401 Unauthorized`.
 
 **Como Testar:**
-Para testar a autenticação, inicie o servidor (`npm run dev`) e tente acessar a rota de *health check* (`/`) usando uma ferramenta como `curl` ou Postman.
+Para testar a autenticação, inicie o servidor (`npm run dev`) e tente acessar a rota de _health check_ (`/`) usando uma ferramenta como `curl` ou Postman.
 
-- **Com API Key correta:**
-  ```bash
-  curl -H "x-api-key: SUA_CHAVE_AQUI" http://localhost:3000/
-  ```
-  (Substitua `SUA_CHAVE_AQUI` pela chave configurada no seu `.env`)
+-   **Com API Key correta:**
 
-- **Sem API Key (ou com chave incorreta):**
-  ```bash
-  curl http://localhost:3000/
-  ```
-  Isso deve retornar um erro `401 Unauthorized`.
+    ```bash
+    curl -H "x-api-key: SUA_CHAVE_AQUI" http://localhost:3000/
+    ```
+
+    (Substitua `SUA_CHAVE_AQUI` pela chave configurada no seu `.env`)
+
+-   **Sem API Key (ou com chave incorreta):**
+    ```bash
+    curl http://localhost:3000/
+    ```
+    Isso deve retornar um erro `401 Unauthorized`.
 
 ## 📡 Endpoints da API
 
 ### Enviar Mensagem de Texto
 
-- **Endpoint**: `POST /send/text`
-- **Descrição**: Envia uma mensagem de texto para um número de telefone.
+-   **Endpoint**: `POST /send/text`
+-   **Descrição**: Envia uma mensagem de texto para um número de telefone.
 
 **Body (JSON):**
 
 ```json
 {
-  "number": "5511999999999",
-  "message": "Olá! Esta é uma mensagem enviada via HermesCore."
+    "number": "5511999999999",
+    "message": "Olá! Esta é uma mensagem enviada via HermesCore."
 }
 ```
 
 ### Enviar Mídia (Imagem ou Documento)
 
-- **Endpoint**: `POST /send/media`
-- **Descrição**: Envia uma imagem ou documento a partir de uma URL.
+-   **Endpoint**: `POST /send/media`
+-   **Descrição**: Envia um arquivo (imagem, documento, etc.) a partir de uma string Base64.
 
 **Body (JSON):**
 
 ```json
 {
-  "number": "5511999999999",
-  "fileUrl": "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
-  "caption": "Segue o documento solicitado."
+    "number": "5511999999999",
+    "fileData": "iVBORw0KGgoAAAANSUhEUgAAAAUA...",
+    "mimetype": "image/png",
+    "filename": "meu-arquivo.png",
+    "caption": "Segue a imagem solicitada."
 }
 ```
+
+-   `fileData`: O conteúdo do arquivo codificado em Base64.
+-   `mimetype`: O tipo do arquivo (ex: `image/png`, `application/pdf`).
+-   `filename`: O nome do arquivo, incluindo a extensão.
+-   `caption`: Legenda opcional para a mídia.
 
 ## 🤖 Sistema de Comandos e Webhook Externo
 
@@ -158,24 +167,24 @@ HermesCore/
 
 ## 🛠️ Tecnologias Utilizadas
 
-- **Node.js**: Ambiente de execução JavaScript.
-- **Fastify**: Framework para a criação da API REST.
-- **whatsapp-web.js**: Biblioteca para interagir com o WhatsApp Web.
-- **Axios**: Cliente HTTP para enviar webhooks para a API externa.
-- **Dotenv**: Para carregar variáveis de ambiente a partir de um arquivo `.env`.
-- **Nodemon**: Para reiniciar o servidor automaticamente durante o desenvolvimento.
+-   **Node.js**: Ambiente de execução JavaScript.
+-   **Fastify**: Framework para a criação da API REST.
+-   **whatsapp-web.js**: Biblioteca para interagir com o WhatsApp Web.
+-   **Axios**: Cliente HTTP para enviar webhooks para a API externa.
+-   **Dotenv**: Para carregar variáveis de ambiente a partir de um arquivo `.env`.
+-   **Nodemon**: Para reiniciar o servidor automaticamente durante o desenvolvimento.
 
 ## 🧱 Roadmap
 
-- [ ] Dashboard com status da sessão do WhatsApp.
-- [ ] Suporte para múltiplas instâncias (vários números).
-- [ ] Implementação de *rate limiter* para os endpoints.
-- [ ] Migração do projeto para TypeScript.
-- [ ] Fila de envio de mensagens com sistema de *retry*.
+-   [ ] Dashboard com status da sessão do WhatsApp.
+-   [ ] Suporte para múltiplas instâncias (vários números).
+-   [ ] Implementação de _rate limiter_ para os endpoints.
+-   [ ] Migração do projeto para TypeScript.
+-   [ ] Fila de envio de mensagens com sistema de _retry_.
 
 ## 🤝 Contribuindo
 
-Pull Requests são bem-vindos! Se você tiver ideias para melhorar o projeto, sinta-se à vontade para criar uma *issue* ou enviar um PR.
+Pull Requests são bem-vindos! Se você tiver ideias para melhorar o projeto, sinta-se à vontade para criar uma _issue_ ou enviar um PR.
 
 ## 📄 Licença
 

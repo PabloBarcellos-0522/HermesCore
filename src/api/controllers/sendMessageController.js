@@ -1,34 +1,53 @@
-// const whatsappClient = require('../../whatsapp/client'); // Será importado aqui mais tarde
+const {
+    sendText: sendWhatsAppText,
+    sendMedia: sendWhatsAppMedia,
+} = require("../../whatsapp/client")
 
 const sendMessage = async (request, reply) => {
-    const { number, message } = request.body;
+    const { number, message } = request.body
 
     if (!number || !message) {
-        reply.code(400).send({ error: 'Bad Request', message: 'Missing "number" or "message" in request body.' });
-        return;
+        reply.code(400).send({
+            error: "Bad Request",
+            message: 'Missing "number" or "message" in request body.',
+        })
+        return
     }
 
-    // TODO: Adicionar lógica real de envio via whatsappClient
-    // Ex: await whatsappClient.sendText(number, message);
+    const result = await sendWhatsAppText(number, message)
 
-    reply.code(200).send({ status: 'success', message: `Message to ${number} scheduled: "${message}"` });
-};
+    if (result.success) {
+        reply
+            .code(200)
+            .send({ status: "success", message: `Message to ${number} sent: "${message}"` })
+    } else {
+        reply.code(500).send({ status: "error", message: result.message })
+    }
+}
 
 const sendMedia = async (request, reply) => {
-    const { number, fileUrl, caption } = request.body;
+    const { number, fileData, mimetype, filename, caption } = request.body
 
-    if (!number || !fileUrl) {
-        reply.code(400).send({ error: 'Bad Request', message: 'Missing "number" or "fileUrl" in request body.' });
-        return;
+    if (!number || !fileData || !mimetype || !filename) {
+        reply.code(400).send({
+            error: "Bad Request",
+            message: 'Missing "number", "fileData", "mimetype", or "filename" in request body.',
+        })
+        return
     }
 
-    // TODO: Adicionar lógica real de envio de mídia via whatsappClient
-    // Ex: await whatsappClient.sendMedia(number, fileUrl, caption);
+    const result = await sendWhatsAppMedia(number, fileData, mimetype, filename, caption)
 
-    reply.code(200).send({ status: 'success', message: `Media to ${number} from ${fileUrl} scheduled` });
-};
+    if (result.success) {
+        reply
+            .code(200)
+            .send({ status: "success", message: `Media to ${number} sent: "${filename}"` })
+    } else {
+        reply.code(500).send({ status: "error", message: result.message })
+    }
+}
 
 module.exports = {
     sendMessage,
     sendMedia,
-};
+}

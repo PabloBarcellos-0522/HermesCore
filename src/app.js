@@ -1,11 +1,13 @@
 const api = require("./api")
-
-// Em breve, o cliente do WhatsApp será inicializado aqui
+const whatsappClient = require("./whatsapp/client") // Importar o cliente WhatsApp
 
 const main = async () => {
     try {
         await api.start()
         console.log("Aplicação iniciada com sucesso.")
+
+        whatsappClient.initialize() // Inicializar o cliente WhatsApp
+        console.log("Cliente WhatsApp inicializado.")
     } catch (error) {
         console.error("Erro ao iniciar a aplicação:", error)
         process.exit(1)
