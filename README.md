@@ -4,11 +4,20 @@ HermesCore é um gateway de API para WhatsApp, projetado para ser simples, segur
 
 O projeto é ideal para centralizar a comunicação via WhatsApp, integrando-a com outras APIs para criar fluxos de trabalho complexos, como consultas a sistemas internos através de comandos.
 
+## 🛠️ Tecnologias Utilizadas
+
+-   **Node.js**: Ambiente de execução JavaScript.
+-   **Fastify**: Framework para a criação da API REST.
+-   **whatsapp-web.js**: Biblioteca para interagir com o WhatsApp Web.
+-   **Axios**: Cliente HTTP para enviar webhooks para a API externa.
+-   **Dotenv**: Para carregar variáveis de ambiente a partir de um arquivo `.env`.
+-   **Nodemon**: Para reiniciar o servidor automaticamente durante o desenvolvimento.
+
 ## 🚀 Principais Recursos
 
 -   **Envio de Mensagens**: Suporte para texto, imagens e documentos através de uma API REST.
 -   **Autenticação Segura**: Acesso à API protegido por uma chave (API Key) configurada em um arquivo `.env`.
--   **Sistema de Comandos**: Capacidade de identificar comandos (ex: `!notas`) em mensagens recebidas e encaminhá-los para uma API externa.
+-   **Sistema de Comandos Dinâmico**: Encaminha comandos personalizados do WhatsApp para sua API externa de forma configurável.
 -   **Webhook Externo**: Notifica uma API externa configurável sempre que uma nova mensagem é recebida, permitindo comunicação bidirecional.
 -   **Gerenciamento de Sessão**: Utiliza o `whatsapp-web.js` para manter a sessão ativa, com reconexão automática e armazenamento local da sessão.
 -   **Estrutura Modular**: Código organizado para facilitar a manutenção e a adição de novas funcionalidades.
@@ -46,10 +55,12 @@ O projeto utiliza um arquivo `.env` para gerenciar as variáveis de ambiente. Co
 cp .env.example .env
 ```
 
-Abra o arquivo `.env` e configure as seguintes variáveis (substitua `SUA_CHAVE_AQUI` por um valor seguro para `API_KEY`):
+Abra o arquivo `.env` e configure as seguintes variáveis:
 
 -   `API_KEY`: Uma chave secreta para proteger o acesso à sua API.
--   `EXTERNAL_API_URL`: O endpoint da sua API externa que receberá as notificações de novas mensagens (webhooks).
+-   `EXTERNAL_API_URL`: A URL base da sua API externa (ex: `http://minha-api.com/`).
+-   `EXTERNAL_API_TOKEN`: (Opcional) Token de autenticação (`Bearer`) para sua API externa.
+-   `EXTERNAL_API_COMMANDS`: Uma lista de comandos, separados por vírgula, que serão encaminhados para sua API externa (ex: `!notas,!faltas,!horario`).
 -   `PORT`: A porta onde o servidor do HermesCore será executado (padrão: `3000`).
 
 ### 4. Executando o Servidor
@@ -72,96 +83,50 @@ Na primeira execução, um **QR Code** será exibido no terminal. Escaneie-o com
 
 Todas as requisições para a API do HermesCore devem incluir a `API_KEY` no cabeçalho `x-api-key` para serem autorizadas.
 
-**Exemplo de Header:**
-
-```
-x-api-key: SUA_CHAVE_SECRETA_CONFIGURADA_NO_.ENV
-```
-
-Requisições sem a chave ou com uma chave inválida receberão um erro `401 Unauthorized`.
-
-**Como Testar:**
-Para testar a autenticação, inicie o servidor (`npm run dev`) e tente acessar a rota de _health check_ (`/`) usando uma ferramenta como `curl` ou Postman.
-
--   **Com API Key correta:**
-
-    ```bash
-    curl -H "x-api-key: SUA_CHAVE_AQUI" http://localhost:3000/
-    ```
-
-    (Substitua `SUA_CHAVE_AQUI` pela chave configurada no seu `.env`)
-
--   **Sem API Key (ou com chave incorreta):**
-    ```bash
-    curl http://localhost:3000/
-    ```
-    Isso deve retornar um erro `401 Unauthorized`.
-
 ## 📡 Endpoints da API
 
 ### Enviar Mensagem de Texto
 
 -   **Endpoint**: `POST /send/text`
--   **Descrição**: Envia uma mensagem de texto para um número de telefone.
-
-**Body (JSON):**
-
-```json
-{
-    "number": "5511999999999",
-    "message": "Olá! Esta é uma mensagem enviada via HermesCore."
-}
-```
+-   **Body**: `{ "number": "...", "message": "..." }`
 
 ### Enviar Mídia (Imagem ou Documento)
 
 -   **Endpoint**: `POST /send/media`
 -   **Descrição**: Envia um arquivo (imagem, documento, etc.) a partir de uma string Base64.
-
-**Body (JSON):**
-
-```json
-{
-    "number": "5511999999999",
-    "fileData": "iVBORw0KGgoAAAANSUhEUgAAAAUA...",
-    "mimetype": "image/png",
-    "filename": "meu-arquivo.png",
-    "caption": "Segue a imagem solicitada."
-}
-```
-
--   `fileData`: O conteúdo do arquivo codificado em Base64.
--   `mimetype`: O tipo do arquivo (ex: `image/png`, `application/pdf`).
--   `filename`: O nome do arquivo, incluindo a extensão.
--   `caption`: Legenda opcional para a mídia.
+-   **Body**: `{ "number": "...", "fileData": "...", "mimetype": "...", "filename": "...", "caption": "..." }`
 
 ## 🤖 Sistema de Comandos e Webhook Externo
 
-HermesCore agora é capaz de processar mensagens recebidas e interagir com APIs externas de duas maneiras principais:
+### Webhook de Mensagens Recebidas
 
-1.  **Webhook de Mensagens Recebidas**: Para *toda* mensagem recebida no WhatsApp, HermesCore enviará automaticamente um `POST` para a `EXTERNAL_API_URL` configurada no `.env` (se estiver definida). O corpo da requisição conterá os detalhes da mensagem (remetente, conteúdo, tipo, etc.). Sua API externa pode então processar esses dados para qualquer finalidade.
+Para _toda_ mensagem recebida no WhatsApp, HermesCore enviará automaticamente um `POST` para a `EXTERNAL_API_URL` configurada no `.env` (se estiver definida). Sua API externa pode usar isso para logs, análises ou qualquer outra lógica que precise de todas as mensagens.
 
-2.  **Sistema de Comandos**: Além do webhook geral, HermesCore pode detectar e responder a comandos específicos.
+### Sistema de Comandos Dinâmico
 
-    **Exemplo de Fluxo com Comando:**
+Este é o recurso principal para criar um bot. Você define quais comandos devem ser processados na sua variável `EXTERNAL_API_COMMANDS` no `.env`.
 
-    *   Usuário envia: `!notas <seu_ra>` (ex: `!notas 12345`)
-    *   HermesCore detecta o comando `!notas`.
-    *   Ele usa o `externalRequest` para chamar sua API externa no endpoint `/aluno/notas?ra=12345` (ou similar, dependendo da sua configuração).
-    *   Sua API externa processa a requisição e retorna os dados das notas.
-    *   HermesCore envia a resposta recebida da sua API de volta ao usuário via WhatsApp.
+**Como Funciona:**
 
-    **Comandos Atuais:**
+1.  **Configuração**: No `.env`, você define `EXTERNAL_API_COMMANDS=!notas,!horario`.
+2.  **Usuário Envia**: Um usuário envia a mensagem `!notas 12345` para o WhatsApp.
+3.  **HermesCore Mapeia**: HermesCore detecta o comando `!notas` e vê que ele está na lista de comandos externos. Ele então mapeia o comando para uma requisição HTTP.
+    -   Comando: `!notas`
+    -   Argumentos: `12345`
+    -   Requisição Gerada: `GET {EXTERNAL_API_URL}/notas?args=12345`
+4.  **Sua API Externa Responde**: Sua API, na rota `/notas`, recebe a requisição, processa os argumentos e retorna um JSON com a resposta que deve ser enviada de volta ao usuário. O formato esperado é:
+    ```json
+    {
+        "data": "Suas notas são: \nMatemática: 10\nHistória: 8"
+    }
+    ```
+5.  **HermesCore Responde**: HermesCore pega o conteúdo da propriedade `data` e o envia como resposta no WhatsApp para o usuário original.
 
-    *   `!notas <seu_ra>`: Exemplo de comando que busca notas de um aluno em uma API externa.
-    *   `!ajuda`: Retorna uma lista de comandos disponíveis.
+**Comandos Internos:**
 
-    **Configuração no `.env`:**
+-   `!ajuda`: Retorna uma lista de todos os comandos disponíveis, combinando os comandos internos e os configurados em `EXTERNAL_API_COMMANDS`.
 
-    *   `EXTERNAL_API_URL`: A URL base da sua API externa que será chamada pelos webhooks e pelos comandos.
-    *   `EXTERNAL_API_TOKEN`: (Opcional) Token de autenticação que será enviado como `Authorization: Bearer <token>` para sua `EXTERNAL_API_URL`.
-
-Este sistema permite que você construa lógicas de bot sofisticadas na sua API externa, enquanto HermesCore cuida da comunicação com o WhatsApp.
+Este sistema permite que toda a lógica do bot resida na sua API externa, mantendo o HermesCore apenas como um gateway de comunicação.
 
 ## 🏗️ Arquitetura do Projeto
 
@@ -174,7 +139,6 @@ HermesCore/
 │   ├── api/              # Define os endpoints da API REST (rotas e controllers)
 │   ├── whatsapp/         # Gerencia a conexão com o WhatsApp (cliente, eventos e reconexão)
 │   ├── services/         # Contém a lógica de negócio, como o envio de webhooks
-│   ├── commands/         # (Opcional) Lógica para manipulação de comandos específicos
 │   ├── config/           # Carregamento e validação das variáveis de ambiente
 │   └── utils/            # Funções auxiliares (logs, formatadores, etc.)
 │
@@ -182,15 +146,6 @@ HermesCore/
 ├── package.json          # Dependências e scripts do projeto
 └── README.md             # Documentação do projeto
 ```
-
-## 🛠️ Tecnologias Utilizadas
-
--   **Node.js**: Ambiente de execução JavaScript.
--   **Fastify**: Framework para a criação da API REST.
--   **whatsapp-web.js**: Biblioteca para interagir com o WhatsApp Web.
--   **Axios**: Cliente HTTP para enviar webhooks para a API externa.
--   **Dotenv**: Para carregar variáveis de ambiente a partir de um arquivo `.env`.
--   **Nodemon**: Para reiniciar o servidor automaticamente durante o desenvolvimento.
 
 ## 🧱 Roadmap
 

@@ -3,6 +3,9 @@ require("dotenv").config()
 const config = {
     apiKey: process.env.API_KEY,
     externalApiUrl: process.env.EXTERNAL_API_URL,
+    externalApiCommands: process.env.EXTERNAL_API_COMMANDS
+        ? process.env.EXTERNAL_API_COMMANDS.split(",").map((item) => item.trim())
+        : [],
     externalApiToken: process.env.EXTERNAL_API_TOKEN,
     port: process.env.PORT || 3000,
     debugMode: process.env.DEBUG_MODE === "true",
