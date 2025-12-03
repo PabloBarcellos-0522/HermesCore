@@ -1,16 +1,16 @@
 const { Client, LocalAuth, MessageMedia } = require("whatsapp-web.js")
 const qrcode = require("qrcode-terminal")
 const config = require("../config/env")
+const messageHandler = require("./handlers/messageHandler")
 
 let isReady = false
 
-// A pasta de sessão será configurável via .env
 const SESSION_PATH = process.env.SESSION_PATH || "./.wwebjs_auth"
 
 const client = new Client({
     authStrategy: new LocalAuth({ clientId: "whatsapp-hermescore", dataPath: SESSION_PATH }),
     puppeteer: {
-        headless: true, // Configurar para true em produção
+        headless: true,
         args: [
             "--no-sandbox",
             "--disable-setuid-sandbox",
@@ -18,7 +18,7 @@ const client = new Client({
             "--disable-accelerated-2d-canvas",
             "--no-first-run",
             "--no-zygote",
-            "--single-process", // <- Essa opção pode ajudar em alguns ambientes
+            "--single-process",
             "--disable-gpu",
         ],
     },
@@ -48,6 +48,8 @@ client.on("disconnected", (reason) => {
     // Adicionar lógica para tentar reconectar
     // client.initialize(); // Pode tentar reiniciar o cliente
 })
+
+client.on("message", messageHandler.handleIncomingMessage)
 
 const initialize = () => {
     console.log("Initializing WhatsApp client...")

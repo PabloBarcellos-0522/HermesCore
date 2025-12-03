@@ -137,13 +137,31 @@ Para testar a autenticação, inicie o servidor (`npm run dev`) e tente acessar 
 
 ## 🤖 Sistema de Comandos e Webhook Externo
 
-Uma das principais funcionalidades do HermesCore é a capacidade de interagir com APIs externas. O fluxo funciona da seguinte maneira:
+HermesCore agora é capaz de processar mensagens recebidas e interagir com APIs externas de duas maneiras principais:
 
-1.  Um usuário envia uma mensagem para o número de WhatsApp conectado (ex: `!notas`).
-2.  HermesCore recebe a mensagem e, se uma `EXTERNAL_API_URL` estiver configurada no `.env`, ele dispara uma requisição `POST` para essa URL.
-3.  O corpo da requisição enviada ao webhook contém os detalhes da mensagem recebida, como o número de origem (`from`) e o texto (`body`).
-4.  Sua API externa pode então processar essa informação. Se for um comando como `!notas`, sua API pode buscar os dados correspondentes e retornar uma resposta.
-5.  Para responder ao usuário, sua API externa simplesmente faz uma chamada de volta para um dos endpoints do HermesCore (ex: `/send/text`), que encaminhará a resposta para o usuário original.
+1.  **Webhook de Mensagens Recebidas**: Para *toda* mensagem recebida no WhatsApp, HermesCore enviará automaticamente um `POST` para a `EXTERNAL_API_URL` configurada no `.env` (se estiver definida). O corpo da requisição conterá os detalhes da mensagem (remetente, conteúdo, tipo, etc.). Sua API externa pode então processar esses dados para qualquer finalidade.
+
+2.  **Sistema de Comandos**: Além do webhook geral, HermesCore pode detectar e responder a comandos específicos.
+
+    **Exemplo de Fluxo com Comando:**
+
+    *   Usuário envia: `!notas <seu_ra>` (ex: `!notas 12345`)
+    *   HermesCore detecta o comando `!notas`.
+    *   Ele usa o `externalRequest` para chamar sua API externa no endpoint `/aluno/notas?ra=12345` (ou similar, dependendo da sua configuração).
+    *   Sua API externa processa a requisição e retorna os dados das notas.
+    *   HermesCore envia a resposta recebida da sua API de volta ao usuário via WhatsApp.
+
+    **Comandos Atuais:**
+
+    *   `!notas <seu_ra>`: Exemplo de comando que busca notas de um aluno em uma API externa.
+    *   `!ajuda`: Retorna uma lista de comandos disponíveis.
+
+    **Configuração no `.env`:**
+
+    *   `EXTERNAL_API_URL`: A URL base da sua API externa que será chamada pelos webhooks e pelos comandos.
+    *   `EXTERNAL_API_TOKEN`: (Opcional) Token de autenticação que será enviado como `Authorization: Bearer <token>` para sua `EXTERNAL_API_URL`.
+
+Este sistema permite que você construa lógicas de bot sofisticadas na sua API externa, enquanto HermesCore cuida da comunicação com o WhatsApp.
 
 ## 🏗️ Arquitetura do Projeto
 
