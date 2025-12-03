@@ -1,3 +1,5 @@
+const sendMessageController = require("./controllers/sendMessageController")
+
 async function routes(fastify, options) {
     // Rota de Health Check
     fastify.get("/", async (request, reply) => {
@@ -5,9 +7,8 @@ async function routes(fastify, options) {
     })
 
     // --- Endpoints para Envio de Mensagem ---
-    // POST /send-text
-    // POST /send-image
-    // POST /send-file
+    fastify.post("/send/text", sendMessageController.sendMessage)
+    fastify.post("/send/media", sendMessageController.sendMedia)
 
     // --- Endpoint para Webhook ---
     // POST /webhook/message

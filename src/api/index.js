@@ -1,10 +1,12 @@
 const fastify = require("fastify")({ logger: true })
 const config = require("../config/env")
+const apiKeyAuth = require("./middlewares/apiKeyAuth")
 
-// Em breve, importaremos e registraremos as rotas aqui
 const routes = require("./routes")
 
 const server = fastify
+
+server.addHook("preHandler", apiKeyAuth)
 
 server.register(routes)
 

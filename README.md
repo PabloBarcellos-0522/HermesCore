@@ -46,7 +46,7 @@ O projeto utiliza um arquivo `.env` para gerenciar as variáveis de ambiente. Co
 cp .env.example .env
 ```
 
-Abra o arquivo `.env` e configure as seguintes variáveis:
+Abra o arquivo `.env` e configure as seguintes variáveis (substitua `SUA_CHAVE_AQUI` por um valor seguro para `API_KEY`):
 
 - `API_KEY`: Uma chave secreta para proteger o acesso à sua API.
 - `EXTERNAL_API_URL`: O endpoint da sua API externa que receberá as notificações de novas mensagens (webhooks).
@@ -79,6 +79,21 @@ x-api-key: SUA_CHAVE_SECRETA_CONFIGURADA_NO_.ENV
 ```
 
 Requisições sem a chave ou com uma chave inválida receberão um erro `401 Unauthorized`.
+
+**Como Testar:**
+Para testar a autenticação, inicie o servidor (`npm run dev`) e tente acessar a rota de *health check* (`/`) usando uma ferramenta como `curl` ou Postman.
+
+- **Com API Key correta:**
+  ```bash
+  curl -H "x-api-key: SUA_CHAVE_AQUI" http://localhost:3000/
+  ```
+  (Substitua `SUA_CHAVE_AQUI` pela chave configurada no seu `.env`)
+
+- **Sem API Key (ou com chave incorreta):**
+  ```bash
+  curl http://localhost:3000/
+  ```
+  Isso deve retornar um erro `401 Unauthorized`.
 
 ## 📡 Endpoints da API
 
