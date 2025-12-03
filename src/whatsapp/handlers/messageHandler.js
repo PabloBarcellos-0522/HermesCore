@@ -1,6 +1,5 @@
 const externalRequest = require("../../services/externalRequest")
 const config = require("../../config/env")
-const { sendText } = require("../client") // Para responder a comandos
 
 async function handleIncomingMessage(message) {
     console.log("Incoming Message:", message.body)
@@ -36,26 +35,20 @@ async function handleIncomingMessage(message) {
                 // Exemplo: Chamar uma rota específica na API externa para !notas
                 const response = await externalRequest.get(`/aluno/notas?ra=${args}`) // Assumindo 'args' é o RA
                 const alunoNotas = response.data.notas // Supondo que a resposta da API externa tenha um campo 'notas'
-                await sendText(message.from.replace("@c.us", ""), `Suas notas: ${alunoNotas}`)
+                return `Suas notas: ${alunoNotas}`
             } catch (error) {
                 console.error("Error processing !notas command:", error.message)
-                await sendText(
-                    message.from.replace("@c.us", ""),
-                    "Ocorreu um erro ao buscar suas notas. Tente novamente mais tarde."
-                )
+                return "Ocorreu um erro ao buscar suas notas. Tente novamente mais tarde."
             }
         } else if (command === "!ajuda") {
-            await sendText(
-                message.from.replace("@c.us", ""),
-                "Comandos disponíveis: !notas <seu_ra>, !ajuda"
-            )
+            return "Comandos disponíveis: \n- !notas <seu_ra> \n- !ajuda"
         } else {
-            await sendText(
-                message.from.replace("@c.us", ""),
-                `Comando "${command}" não reconhecido. Digite !ajuda para ver os comandos.`
-            )
+            return `Comando "${command}" não reconhecido. Digite !ajuda para ver os comandos.`
         }
     }
+
+    // Se não for um comando, não retorna nada para responder
+    return null
 }
 
 module.exports = {

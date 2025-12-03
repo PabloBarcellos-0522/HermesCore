@@ -49,7 +49,12 @@ client.on("disconnected", (reason) => {
     // client.initialize(); // Pode tentar reiniciar o cliente
 })
 
-client.on("message", messageHandler.handleIncomingMessage)
+client.on("message", async (message) => {
+    const reply = await messageHandler.handleIncomingMessage(message)
+    if (reply) {
+        message.reply(reply)
+    }
+})
 
 const initialize = () => {
     console.log("Initializing WhatsApp client...")
