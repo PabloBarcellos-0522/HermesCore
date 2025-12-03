@@ -1,13 +1,10 @@
 const fastify = require("fastify")({ logger: true })
 const config = require("../config/env")
-const apiKeyAuth = require("./middlewares/apiKeyAuth")
 const routes = require("./routes")
 const { AppError } = require("../utils/errors")
 const { sendError } = require("../utils/response")
 
 const server = fastify
-
-server.addHook("preHandler", apiKeyAuth)
 
 server.register(routes)
 

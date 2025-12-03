@@ -7,6 +7,7 @@ const config = {
         ? process.env.EXTERNAL_API_COMMANDS.split(",").map((item) => item.trim())
         : [],
     externalApiToken: process.env.EXTERNAL_API_TOKEN,
+    webhookToken: process.env.WEBHOOK_TOKEN,
     port: process.env.PORT || 3000,
     debugMode: process.env.DEBUG_MODE === "true",
 }
