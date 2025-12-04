@@ -1,6 +1,6 @@
 const { Client, LocalAuth, MessageMedia } = require("whatsapp-web.js")
 const qrcode = require("qrcode-terminal")
-const fs = require("fs-extra") // Import fs-extra
+const logger = require("../config/logger")
 const messageHandler = require("./handlers/messageHandler")
 
 let isReady = false
@@ -25,44 +25,44 @@ const client = new Client({
 })
 
 client.on("qr", (qr) => {
-    console.log("QR RECEIVED", qr)
+    logger.info("QR Code received, generating...")
     qrcode.generate(qr, { small: true })
 })
 
 client.on("ready", () => {
-    console.log("Client is ready!")
+    logger.info("Client is ready!")
     isReady = true
 })
 
 client.on("authenticated", () => {
-    console.log("Client is authenticated!")
+    logger.info("Client is authenticated!")
 })
 
 client.on("auth_failure", (msg) => {
-    console.error("AUTHENTICATION FAILURE", msg)
+    logger.error({ msg }, "AUTHENTICATION FAILURE")
 })
 
 client.on("disconnected", async (reason) => {
-    console.log("Client disconnected", reason)
+    logger.warn({ reason }, "Client disconnected")
     isReady = false
 
     if (reason === "LOGOUT" || reason === "NAVIGATION") {
-        console.error("WhatsApp client was logged out. Shutting down for a clean restart.")
+        logger.error("WhatsApp client was logged out. Shutting down for a clean restart.")
         try {
             await client.destroy()
-            console.log("Client destroyed successfully.")
+            logger.info("Client destroyed successfully.")
         } catch (err) {
-            console.error("Error destroying client (may be due to file locks):", err.message)
+            logger.error({ err }, "Error destroying client (may be due to file locks):")
         } finally {
             // Exit the process, PM2/Nodemon will restart it cleanly.
             process.exit(1)
         }
     } else {
-        console.log("Attempting to reconnect...")
+        logger.info("Attempting to reconnect...")
         try {
             client.initialize()
         } catch (error) {
-            console.error("Error during reconnection attempt:", error)
+            logger.error({ err: error }, "Error during reconnection attempt:")
         }
     }
 })
@@ -75,20 +75,20 @@ client.on("message", async (message) => {
 })
 
 const initialize = () => {
-    console.log("Initializing WhatsApp client...")
+    logger.info("Initializing WhatsApp client...")
     client.initialize()
 }
 
 const sendText = async (number, message) => {
     try {
         if (!isReady) {
-            console.warn("WhatsApp client not ready. Message will not be sent.")
+            logger.warn("WhatsApp client not ready. Message will not be sent.")
             return { success: false, message: "WhatsApp client not ready." }
         }
         await client.sendMessage(`${number}@c.us`, message)
         return { success: true }
     } catch (error) {
-        console.error("Error sending message:", error)
+        logger.error({ err: error, to: number }, "Error sending message:")
         return { success: false, message: error.message }
     }
 }
@@ -96,14 +96,14 @@ const sendText = async (number, message) => {
 const sendMedia = async (number, fileData, mimetype, filename, caption) => {
     try {
         if (!isReady) {
-            console.warn("WhatsApp client not ready. Media will not be sent.")
+            logger.warn("WhatsApp client not ready. Media will not be sent.")
             return { success: false, message: "WhatsApp client not ready." }
         }
         const media = new MessageMedia(mimetype, fileData, filename)
         await client.sendMessage(`${number}@c.us`, media, { caption: caption })
         return { success: true }
     } catch (error) {
-        console.error("Error sending media:", error)
+        logger.error({ err: error, to: number }, "Error sending media:")
         return { success: false, message: error.message }
     }
 }

@@ -1,15 +1,15 @@
+const logger = require("./config/logger")
 const api = require("./api")
 const whatsappClient = require("./whatsapp/client") // Importar o cliente WhatsApp
 
 const main = async () => {
     try {
         await api.start()
-        console.log("Aplicação iniciada com sucesso.")
+        logger.info("Aplicação iniciada com sucesso.")
 
         whatsappClient.initialize() // Inicializar o cliente WhatsApp
-        console.log("Cliente WhatsApp inicializado.")
     } catch (error) {
-        console.error("Erro ao iniciar a aplicação:", error)
+        logger.error({ err: error }, "Erro ao iniciar a aplicação:")
         process.exit(1)
     }
 }
