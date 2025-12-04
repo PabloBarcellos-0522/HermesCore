@@ -1,4 +1,9 @@
-# 📦 HermesCore
+# ⚡ HermesCore
+
+<div align="center">
+  <img src="resouces/HERMES-MENSAGEIRO.jpg" alt="Hermer, o mensageiro dos Deuses" width="400">
+</div>
+<br>
 
 HermesCore é um gateway de API para WhatsApp, projetado para ser simples, seguro e altamente extensível. Ele permite que sistemas externos enviem mensagens (texto, imagem e documentos) e recebam notificações de mensagens recebidas, facilitando a automação e a criação de bots com lógicas de negócio personalizadas.
 
@@ -52,13 +57,46 @@ cp .env.example .env
 -   `EXTERNAL_API_COMMANDS`: Comandos que serão encaminhados para sua API externa (ex: `!notas,!faltas`).
 -   `PORT`: Porta onde o servidor será executado (padrão: `3000`).
 
-### 4. Executando o Servidor
+### 4. Executando em Modo de Desenvolvimento
 
 ```bash
 npm run dev
 ```
 
 Na primeira execução, um **QR Code** será exibido no terminal. Escaneie-o com o WhatsApp para conectar.
+
+### 5. Deploy em Produção com PM2
+
+Para executar a aplicação em um ambiente de produção de forma estável, é recomendado o uso do PM2, um gerenciador de processos para Node.js.
+
+**a. Instale o PM2 globalmente:**
+
+```bash
+npm install pm2 -g
+```
+
+**b. Inicie a aplicação:**
+Este comando irá iniciar o HermesCore em modo de produção, utilizando o arquivo de configuração `scripts/pm2.config.js`.
+
+```bash
+npm run pm2:start
+```
+
+**c. Monitore a aplicação:**
+Você pode ver o status, uso de CPU, memória e logs com os seguintes comandos:
+
+```bash
+pm2 list
+pm2 monit
+pm2 logs HermesCore
+```
+
+**d. Pare a aplicação:**
+Este comando irá parar e remover a aplicação da lista do PM2.
+
+```bash
+npm run pm2:stop
+```
 
 ## 📡 Endpoints da API
 

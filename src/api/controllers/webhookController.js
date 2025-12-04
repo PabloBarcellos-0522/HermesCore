@@ -2,10 +2,6 @@ const { sendText: sendWhatsAppText } = require("../../whatsapp/client")
 const { sendSuccess } = require("../../utils/response")
 const { BadRequestError, InternalServerError } = require("../../utils/errors")
 
-/**
- * Lida com o evento de um novo cliente, enviando uma mensagem de boas-vindas.
- * O corpo da requisição deve conter 'name' e 'number'.
- */
 const handleCustomerRegistrationEvent = async (request, reply) => {
     const { name, number, verificationCode } = request.body
 
@@ -38,7 +34,7 @@ const handleNewCustomerEvent = async (request, reply) => {
         )
     }
 
-    const welcomeMessage = `${name} bem-vindo(a), \nSeu registro foi confirmado! \nEu sou o Hermes responsável por gerenciar nossas comunicações daqui pra frente. \nCaso tenha alguma dúvida, pode digitar o comando !ajuda. 😊`
+    const welcomeMessage = `${name} bem-vindo(a), \nSeu registro foi confirmado! \nEu sou o Hermes responsável por gerenciar nossas conversas daqui pra frente. \nCaso tenha alguma dúvida, pode digitar o comando !ajuda. 😊`
 
     const result = await sendWhatsAppText(number, welcomeMessage)
 
