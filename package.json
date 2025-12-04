@@ -7,7 +7,7 @@
         "dev": "nodemon src/app.js | pino-pretty",
         "start": "pm2 start scripts/pm2.config.js --env production",
         "logs": "pm2 logs HermesCore --lines 1000",
-        "stop": "pm2 delete HermesCore",
+        "stop": "pm2 stop HermesCore",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "repository": {
