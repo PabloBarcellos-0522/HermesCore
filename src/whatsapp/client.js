@@ -24,22 +24,9 @@ const client = new Client({
     },
 })
 
-client.on("qr", (qr) => {
-    logger.info("QR Code received, generating...")
-    qrcode.generate(qr, { small: true })
-})
-
 client.on("ready", () => {
     logger.info("Client is ready!")
     isReady = true
-})
-
-client.on("authenticated", () => {
-    logger.info("Client is authenticated!")
-})
-
-client.on("auth_failure", (msg) => {
-    logger.error({ msg }, "AUTHENTICATION FAILURE")
 })
 
 client.on("disconnected", async (reason) => {
