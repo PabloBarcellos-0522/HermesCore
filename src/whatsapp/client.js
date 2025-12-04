@@ -1,6 +1,6 @@
 const { Client, LocalAuth, MessageMedia } = require("whatsapp-web.js")
 const qrcode = require("qrcode-terminal")
-const config = require("../config/env")
+const fs = require("fs-extra") // Import fs-extra
 const messageHandler = require("./handlers/messageHandler")
 
 let isReady = false
@@ -42,11 +42,29 @@ client.on("auth_failure", (msg) => {
     console.error("AUTHENTICATION FAILURE", msg)
 })
 
-client.on("disconnected", (reason) => {
+client.on("disconnected", async (reason) => {
     console.log("Client disconnected", reason)
     isReady = false
-    // Adicionar lógica para tentar reconectar
-    // client.initialize(); // Pode tentar reiniciar o cliente
+
+    if (reason === "LOGOUT" || reason === "NAVIGATION") {
+        console.error("WhatsApp client was logged out. Shutting down for a clean restart.")
+        try {
+            await client.destroy()
+            console.log("Client destroyed successfully.")
+        } catch (err) {
+            console.error("Error destroying client (may be due to file locks):", err.message)
+        } finally {
+            // Exit the process, PM2/Nodemon will restart it cleanly.
+            process.exit(1)
+        }
+    } else {
+        console.log("Attempting to reconnect...")
+        try {
+            client.initialize()
+        } catch (error) {
+            console.error("Error during reconnection attempt:", error)
+        }
+    }
 })
 
 client.on("message", async (message) => {

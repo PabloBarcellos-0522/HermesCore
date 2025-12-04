@@ -25,7 +25,7 @@ O projeto é ideal para centralizar a comunicação via WhatsApp, integrando-a c
 -   **Sistema de Comandos Dinâmico**: Encaminha comandos personalizados do WhatsApp para sua API externa de forma configurável.
 -   **Webhook de Saída**: Notifica uma API externa configurável sempre que uma nova mensagem é recebida no WhatsApp.
 -   **Webhook de Entrada**: Permite que sistemas externos notifiquem o HermesCore sobre eventos (ex: "novo cliente"), fazendo com que ele envie mensagens pré-definidas.
--   **Gerenciamento de Sessão**: Utiliza o `whatsapp-web.js` para manter a sessão ativa, com reconexão automática.
+-   **Gerenciamento de Sessão Inteligente**: Utiliza o `whatsapp-web.js` para manter a sessão ativa. Em caso de desconexão (ex: por uma queda de rede), o cliente tentará se reconectar automaticamente para manter a aplicação online.
 
 ## ⚙️ Como Começar
 
