@@ -1,5 +1,6 @@
 const axios = require("axios")
 const config = require("../config/env")
+const logger = require("../config/logger")
 
 const externalApi = axios.create({
     baseURL: config.externalApiUrl,
@@ -28,10 +29,15 @@ externalApi.interceptors.response.use(
         return response
     },
     (error) => {
-        console.error("External API Request Error:", error.message)
+        logger.error({ err: error }, "External API request error")
         if (error.response) {
-            console.error("External API Response Status:", error.response.status)
-            console.error("External API Response Data:", error.response.data)
+            logger.error(
+                {
+                    status: error.response.status,
+                    data: error.response.data,
+                },
+                "External API response error details"
+            )
         }
         return Promise.reject(error)
     }
