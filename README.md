@@ -140,4 +140,37 @@ Este sistema permite que toda a lógica do bot resida na sua API externa, manten
 
 ## 🏗️ Arquitetura do Projeto
 
-... (O restante do arquivo permanece o mesmo) ...
+
+A estrutura de pastas foi projetada para separar responsabilidades e garantir um código limpo e organizado.
+
+```
+HermesCore/
+├── scripts/              # Arquivos de configuração para o gerenciamento de processos
+│
+├── src/
+│   ├── api/              # Define os endpoints da API REST (rotas e controllers)
+│   ├── whatsapp/         # Gerencia a conexão com o WhatsApp (cliente, eventos e reconexão)
+│   ├── services/         # Contém a lógica de negócio, como o envio de webhooks
+│   ├── config/           # Carregamento e validação das variáveis de ambiente
+│   └── utils/            # Funções auxiliares (logs, formatadores, etc.)
+│
+├── .env.example          # Arquivo de exemplo para as variáveis de ambiente
+├── package.json          # Dependências e scripts do projeto
+└── README.md             # Documentação do projeto
+```
+
+## 🧱 Roadmap
+
+- [ ] Dashboard com status da sessão do WhatsApp.
+- [ ] Suporte para múltiplas instâncias (vários números).
+- [ ] Implementação de *rate limiter* para os endpoints.
+- [ ] Migração do projeto para TypeScript.
+- [ ] Fila de envio de mensagens com sistema de *retry*.
+
+## 🤝 Contribuindo
+
+Pull Requests são bem-vindos! Se você tiver ideias para melhorar o projeto, sinta-se à vontade para criar uma *issue* ou enviar um PR.
+
+## 📄 Licença
+
+Este projeto está sob a licença MPL 2.0. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
