@@ -10,10 +10,23 @@ const logger = require("../../config/logger")
 async function sendIncomingMessageWebhook(message) {
     if (!config.externalApiUrl) return
 
+    let fromNumber = message.from // Default to original from
+    try {
+        const contact = await message.getContact()
+        if (contact.number) {
+            fromNumber = contact.number
+        }
+    } catch (error) {
+        logger.warn(
+            { err: error, from: message.from },
+            "Could not get contact for webhook, using message.from"
+        )
+    }
+
     try {
         // This sends a copy of every message to the external API for logging or other purposes.
         await externalRequest.post("/", {
-            from: message.from,
+            from: fromNumber,
             to: message.to,
             body: message.body,
             type: message.type,
@@ -21,7 +34,7 @@ async function sendIncomingMessageWebhook(message) {
             hasMedia: message.hasMedia,
         })
         logger.debug(
-            { from: message.from, body: message.body },
+            { from: fromNumber, body: message.body },
             "Outgoing webhook sent for incoming message."
         )
     } catch (error) {
@@ -37,7 +50,6 @@ async function sendIncomingMessageWebhook(message) {
 async function handleIncomingMessage(message) {
     logger.debug({ from: message.from, body: message.body }, "New message received.")
 
-    // Fork the webhook sending so it doesn't block command processing.
     sendIncomingMessageWebhook(message)
 
     if (!message.body.startsWith("!")) {
@@ -46,22 +58,46 @@ async function handleIncomingMessage(message) {
 
     const command = message.body.split(" ")[0].toLowerCase()
     const args = message.body.substring(command.length).trim()
-    logger.info({ command, args, from: message.from }, "Command received.")
 
-    // 1. Handle internal commands first
+    let from
+    try {
+        const contact = await message.getContact()
+        from = contact.number
+    } catch (error) {
+        logger.error(
+            { err: error, from: message.from },
+            "Could not get contact details via getContact()."
+        )
+
+        if (message.from.endsWith("@c.us")) {
+            from = message.from.replace("@c.us", "")
+            logger.warn({ from }, "Falling back to number from message.from for @c.us contact.")
+        } else {
+            logger.error(
+                { from: message.from },
+                "Failed to get a valid sender number because it is a @lid and getContact() failed."
+            )
+            return "Não foi possível obter seu número de telefone para processar o comando. Tente salvar o número do bot em seus contatos e tente novamente."
+        }
+    }
+
+    if (!from) {
+        logger.warn({ from: message.from }, "Could not determine a valid 'from' number.")
+        return `Não foi possível identificar seu número. Comando "${command}" não pôde ser processado.`
+    }
+
+    logger.info({ command, args, from }, "Command received.")
+
     if (command === "!ajuda") {
         const availableCommands = config.externalApiCommands.join("\n- ")
         return `Comandos disponíveis:\n- !ajuda\n- ${availableCommands}`
     }
 
-    // 2. Check if it's a valid external command and delegate to the service
     if (config.externalApiCommands.includes(command)) {
-        // The command service will handle the external API call and error handling.
-        const reply = await commandService.execute(command.substring(1), args)
+        const reply = await commandService.execute(command.substring(1), args, from)
         return reply
     }
 
-    // 3. If the command is not recognized
     logger.warn({ command, from: message.from }, "Unrecognized command.")
     return `Comando "${command}" não reconhecido. Digite !ajuda para ver a lista de comandos disponíveis.`
 }

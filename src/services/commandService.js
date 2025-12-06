@@ -7,12 +7,12 @@ const logger = require("../config/logger")
  * @param {string} [args] - The arguments for the command.
  * @returns {Promise<string|null>} The reply message from the external API, or null if an error occurs.
  */
-const execute = async (command, args) => {
+const execute = async (command, args, from) => {
     logger.debug({ command, args }, "Executing external command")
 
     try {
         const response = await externalApi.get(`/${command}`, {
-            params: { args: args || "" },
+            params: { args: args || "", from: from || "" },
         })
 
         // Assuming the external API returns a JSON with a "data" or "reply" field.
