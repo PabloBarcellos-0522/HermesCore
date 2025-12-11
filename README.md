@@ -52,9 +52,9 @@ cp .env.example .env
 
 -   `API_KEY`: Chave secreta para proteger os endpoints de envio direto (`/send/*`).
 -   `WEBHOOK_TOKEN`: Chave secreta para proteger os endpoints de eventos (`/webhooks/events/*`).
--   `EXTERNAL_API_URL`: URL base da sua API externa para o sistema de comandos (`!comando`).
+-   `EXTERNAL_API_URL`: URL base da sua API externa para o sistema de comandos (`/comando`).
 -   `EXTERNAL_API_TOKEN`: (Opcional) Token de autenticação para a sua API externa.
--   `EXTERNAL_API_COMMANDS`: Comandos que serão encaminhados para sua API externa (ex: `!notas,!faltas`).
+-   `EXTERNAL_API_COMMANDS`: Comandos que serão encaminhados para sua API externa (ex: `/notas,/faltas`).
 -   `PORT`: Porta onde o servidor será executado (padrão: `3000`).
 
 ### 4. Executando em Modo de Desenvolvimento
@@ -140,7 +140,6 @@ Este sistema permite que toda a lógica do bot resida na sua API externa, manten
 
 ## 🏗️ Arquitetura do Projeto
 
-
 A estrutura de pastas foi projetada para separar responsabilidades e garantir um código limpo e organizado.
 
 ```
@@ -161,15 +160,15 @@ HermesCore/
 
 ## 🧱 Roadmap
 
-- [ ] Dashboard com status da sessão do WhatsApp.
-- [ ] Suporte para múltiplas instâncias (vários números).
-- [ ] Implementação de *rate limiter* para os endpoints.
-- [ ] Migração do projeto para TypeScript.
-- [ ] Fila de envio de mensagens com sistema de *retry*.
+-   [ ] Dashboard com status da sessão do WhatsApp.
+-   [ ] Suporte para múltiplas instâncias (vários números).
+-   [ ] Implementação de _rate limiter_ para os endpoints.
+-   [ ] Migração do projeto para TypeScript.
+-   [ ] Fila de envio de mensagens com sistema de _retry_.
 
 ## 🤝 Contribuindo
 
-Pull Requests são bem-vindos! Se você tiver ideias para melhorar o projeto, sinta-se à vontade para criar uma *issue* ou enviar um PR.
+Pull Requests são bem-vindos! Se você tiver ideias para melhorar o projeto, sinta-se à vontade para criar uma _issue_ ou enviar um PR.
 
 ## 📄 Licença
 

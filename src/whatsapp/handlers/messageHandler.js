@@ -50,9 +50,8 @@ async function sendIncomingMessageWebhook(message) {
 async function handleIncomingMessage(message) {
     logger.debug({ from: message.from, body: message.body }, "New message received.")
 
-    sendIncomingMessageWebhook(message)
-
-    if (!message.body.startsWith("!")) {
+    if (!message.body.startsWith("/")) {
+        sendIncomingMessageWebhook(message)
         return null
     }
 
@@ -88,9 +87,9 @@ async function handleIncomingMessage(message) {
 
     logger.info({ command, args, from }, "Command received.")
 
-    if (command === "!ajuda") {
+    if (command === "/ajuda") {
         const availableCommands = config.externalApiCommands.join("\n- ")
-        return `Comandos disponíveis:\n- !ajuda\n- ${availableCommands}`
+        return `Comandos disponíveis:\n- /ajuda\n- ${availableCommands}`
     }
 
     if (config.externalApiCommands.includes(command)) {
@@ -99,7 +98,7 @@ async function handleIncomingMessage(message) {
     }
 
     logger.warn({ command, from: message.from }, "Unrecognized command.")
-    return `Comando "${command}" não reconhecido. Digite !ajuda para ver a lista de comandos disponíveis.`
+    return `Comando "${command}" não reconhecido. Digite /ajuda para ver a lista de comandos disponíveis.`
 }
 
 module.exports = {
