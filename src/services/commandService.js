@@ -1,5 +1,6 @@
 const externalApi = require("./externalRequest")
 const logger = require("../config/logger")
+const env = require("../config/env")
 
 /**
  * Executes an external command by making a GET request to the configured external API.
@@ -12,7 +13,7 @@ const execute = async (command, args, from) => {
 
     try {
         const response = await externalApi.get(`/${command}`, {
-            params: { args: args || "", from: from || "" },
+            params: { args: args || "", from: from || "", token: env.externalApiUrl || "" },
         })
 
         // Assuming the external API returns a JSON with a "data" or "reply" field.
