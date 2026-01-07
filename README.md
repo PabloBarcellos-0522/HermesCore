@@ -13,7 +13,7 @@ O projeto é ideal para centralizar a comunicação via WhatsApp, integrando-a c
 
 -   **Node.js**: Ambiente de execução JavaScript.
 -   **Fastify**: Framework para a criação da API REST.
--   **whatsapp-web.js**: Biblioteca para interagir com o WhatsApp Web.
+-   **[whatsapp-web.js](https://github.com/pedroslopez/whatsapp-web.js)**: Biblioteca para interagir com o WhatsApp Web.
 -   **Axios**: Cliente HTTP para enviar webhooks para a API externa.
 -   **Dotenv**: Para carregar variáveis de ambiente a partir de um arquivo `.env`.
 -   **Nodemon**: Para reiniciar o servidor automaticamente durante o desenvolvimento.
