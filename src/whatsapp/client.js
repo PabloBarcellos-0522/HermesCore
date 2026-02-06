@@ -61,9 +61,14 @@ client.on("message", async (message) => {
     }
 })
 
-const initialize = () => {
-    logger.info("Initializing WhatsApp client...")
-    client.initialize()
+const initialize = async () => {
+    try {
+        logger.info("Initializing WhatsApp client...")
+        await client.initialize()
+    } catch (error) {
+        logger.error({ err: error }, "Failed to initialize WhatsApp client!")
+        process.exit(1)
+    }
 }
 
 const sendText = async (number, message) => {

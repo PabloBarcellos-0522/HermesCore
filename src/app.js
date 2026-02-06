@@ -9,7 +9,7 @@ const main = async () => {
         logger.info("Aplicação iniciada com sucesso.")
 
         connectionHandler.initialize(whatsapp.client)
-        whatsapp.initialize()
+        await whatsapp.initialize()
     } catch (error) {
         logger.error({ err: error }, "Erro ao iniciar a aplicação:")
         process.exit(1)
