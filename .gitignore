@@ -58,3 +58,5 @@ node_modules_*
 
 .babel.json
 package.json.bak
+
+chrome

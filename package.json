@@ -5,7 +5,7 @@
     "main": "index.js",
     "scripts": {
         "dev": "nodemon src/app.js | pino-pretty",
-        "start": "pm2 start scripts/pm2.config.js --env production",
+        "start": "npx @puppeteer/browsers install chrome && pm2 start scripts/pm2.config.js --env production && pm2 logs HermesCore",
         "logs": "pm2 logs HermesCore --lines 1000",
         "stop": "pm2 stop HermesCore",
         "test": "echo \"Error: no test specified\" && exit 1"
@@ -29,7 +29,8 @@
         "pino": "^10.1.0",
         "pm2": "^6.0.14",
         "qrcode-terminal": "^0.12.0",
-        "whatsapp-web.js": "github:pedroslopez/whatsapp-web.js#main"
+        "whatsapp-web.js": "github:pedroslopez/whatsapp-web.js#main",
+        "@puppeteer/browsers": "^1.x.x"
     },
     "devDependencies": {
         "pino-pretty": "^13.1.3"
