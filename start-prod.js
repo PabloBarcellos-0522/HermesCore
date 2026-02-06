@@ -24,12 +24,12 @@ function runPm2() {
 function runInstaller() {
     console.log(`[PROD START] Browser cache not found. Starting installation...`)
 
-    // We set PUPPETEER_CACHE_DIR so the installer knows where to put the files.
-    const env = { ...process.env, PUPPETEER_CACHE_DIR: puppeteerCacheDir }
-    const installer = spawn("npx", ["@puppeteer/browsers", "install", "chrome"], {
-        shell: true,
-        env: env,
-    })
+    // Explicitly pass the '--path' argument to force the installation directory.
+    const installer = spawn(
+        "npx",
+        ["@puppeteer/browsers", "install", "chrome", "--path", puppeteerCacheDir],
+        { shell: true },
+    )
 
     let killed = false
 
@@ -45,7 +45,6 @@ function runInstaller() {
         const output = data.toString()
         console.log(output) // Log installer progress
 
-        // The success indicator is the line like "chrome@146.0.7672.0 C:\...". We'll use "chrome@"
         if (!killed && output.includes("chrome@")) {
             killed = true
             console.log(
@@ -53,7 +52,6 @@ function runInstaller() {
             )
             clearTimeout(timeout)
 
-            // Give it a brief moment to settle file writes before killing.
             setTimeout(() => {
                 installer.kill()
                 runPm2()
@@ -66,13 +64,10 @@ function runInstaller() {
     })
 
     installer.on("close", (code) => {
-        // This will likely only be called on subsequent runs where it exits cleanly.
         if (!killed) {
             clearTimeout(timeout)
             if (code === 0) {
-                console.log(
-                    "[PROD START] Installer exited cleanly (browser was likely already installed).",
-                )
+                console.log("[PROD START] Installer exited cleanly.")
                 runPm2()
             } else {
                 console.error(`[PROD START] Installer process failed with code ${code}.`)
@@ -83,7 +78,6 @@ function runInstaller() {
 }
 
 // --- Main execution ---
-// Check if the cache directory exists and is not empty.
 if (fs.existsSync(puppeteerCacheDir) && fs.readdirSync(puppeteerCacheDir).length > 0) {
     console.log("[PROD START] Browser cache found. Starting application directly.")
     runPm2()
