@@ -5,7 +5,7 @@
     "main": "index.js",
     "scripts": {
         "dev": "nodemon src/app.js | pino-pretty",
-        "start": "npx @puppeteer/browsers install chrome && pm2 start scripts/pm2.config.js --env production && pm2 logs HermesCore",
+        "start": "node start-prod.js",
         "logs": "pm2 logs HermesCore --lines 1000",
         "stop": "pm2 stop HermesCore",
         "test": "echo \"Error: no test specified\" && exit 1"
