@@ -10,7 +10,7 @@ function runPm2() {
     try {
         const env = { ...process.env, PUPPETEER_CACHE_DIR: puppeteerCacheDir }
 
-        execSync("pm2 start scripts/pm2.config.js --env production", { stdio: "inherit", env: env })
+        execSync("pm2-runtime start scripts/pm2.config.js --env production", { stdio: "inherit", env: env })
         execSync("pm2 logs HermesCore", { stdio: "inherit", env: env })
 
         console.log("[PROD START] PM2 started. The bootstrap script will now exit.")
